@@ -48,10 +48,15 @@ bool			BasicMaze::Load(const char* f)
 		return (false);
 	
 	LoadingIsOk = this->CheckFormat(ifs);
+	if (LoadingIsOk == false)
+	{
+		ifs.close();
+		return (false);
+	}
 	LoadingIsOk = this->RealLoading(ifs);
 	ifs.close();
-	this->p_loaded = true;
-	return (true);
+	this->p_loaded = LoadingIsOk;
+	return (LoadingIsOk);
 }
 
 bool			BasicMaze::Explore()
@@ -62,7 +67,7 @@ bool			BasicMaze::Explore()
 bool			BasicMaze::CheckFormat(std::ifstream& ifs)
 {
 	bool			    first_line;
-	std::string		line;
+	std::string			line;
 
 	first_line = true;
 	this->p_height = 0;
