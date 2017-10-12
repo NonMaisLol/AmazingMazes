@@ -5,6 +5,9 @@
   Ctor par copie dans la fille a mettre aussi ici.
  */
 
+#define		SHEB_EMPTY		'*'
+#define		SHEB_WALL		'X'
+
 typedef		unsigned int	uint;
 
 class		AMaze
@@ -55,8 +58,8 @@ public:
 public:
   virtual char	GetElement(uint x, uint y) const	= 0;
   virtual bool	SetElement(uint x, uint y, char e)	= 0;
-  virtual bool	Load(const char* f)			= 0;
-  virtual bool	Explore()				= 0;
+  virtual bool	Load(const char* f)					= 0;
+  virtual bool	Explore()							= 0;
 };
 
 #endif		// __AMAZE_HH__

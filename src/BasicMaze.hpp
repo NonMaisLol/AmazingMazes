@@ -4,7 +4,9 @@
 #include	<iostream>
 #include	<fstream>
 #include	<string>
+#include	<string.h>
 #include	<vector>
+#include	<unistd.h>
 
 #include	"AMaze.hpp"
 
@@ -34,6 +36,7 @@ public:
 private:
   bool		CheckFormat(std::ifstream& ifs);
   bool		RealLoading(std::ifstream& ifs);
+  bool		CheckCharacter(std::ifstream& ifs);
 };
 
 #endif		// __BASICMAZE_HH__
