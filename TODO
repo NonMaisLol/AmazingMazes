@@ -1,2 +1,5 @@
 
 - Fichier de log d erreur (avec des numeros ?)
+- Faire qu on puisse choisir l entre et la sortie du lab.
+- Faire un truc de serialisation pour eviter de reparse chaque fois .. genre une option keepload.
+- Tester avec un 2 - 2

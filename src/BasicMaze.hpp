@@ -37,6 +37,7 @@ private:
   bool		CheckFormat(std::ifstream& ifs);
   bool		RealLoading(std::ifstream& ifs);
   bool		CheckCharacter(std::ifstream& ifs);
+  char		Track(uint x, uint y);
 };
 
 #endif		// __BASICMAZE_HH__

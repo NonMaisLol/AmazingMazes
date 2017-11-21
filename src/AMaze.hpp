@@ -7,6 +7,7 @@
 
 #define		SHEB_EMPTY		'*'
 #define		SHEB_WALL		'X'
+#define		SHEB_EXPLORED	'e'
 
 typedef		unsigned int	uint;
 
@@ -15,11 +16,11 @@ class		AMaze
 public:
   enum		eType
   {
-    e_none,
-    e_imperfect,
-    e_perfect,
-    e_rperfect,
-    e_rrperfect
+    e_none,			// Nothing
+    e_imperfect,	// Imperfect Maze
+    e_perfect,		// Perfect Maze
+    e_rperfect,		// Really Perfect Maze
+    e_rrperfect		// Really REALLY Perfect Maze
   };
 
 public:
@@ -36,6 +37,7 @@ protected:
   uint		p_height;
   uint		p_width;
   uint		p_size;
+  uint		p_npath;
   uint		p_ntwist;
   uint		p_ndeadend;
   uint		p_nturn;
@@ -47,6 +49,7 @@ public:
   uint		GetHeight() const	{ return (this->p_height); }
   uint		GetWidth() const	{ return (this->p_width); }
   uint		GetSize() const		{ return (this->p_size); }
+  uint		GetNPath() const	{ return (this->p_npath); }
   uint		GetNTwist() const	{ return (this->p_ntwist); }
   uint		GetNDeadEnd() const	{ return (this->p_ndeadend); }
   uint		GetNTurn() const	{ return (this->p_nturn); }

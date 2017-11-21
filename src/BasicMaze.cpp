@@ -14,6 +14,7 @@ BasicMaze::~BasicMaze()
 
 BasicMaze&		BasicMaze::operator=(const BasicMaze& m)
 {
+	return (*this);
 }
 
 void			BasicMaze::PrintConsole() const
@@ -26,6 +27,9 @@ void			BasicMaze::PrintConsole() const
 	std::cout << "Width: " << this->p_width << std::endl;
 	std::cout << "Height: " << this->p_height << std::endl;
 	std::cout << "Size: " << this->p_size << std::endl;
+	std::cout << "Path: " << this->p_npath << std::endl;
+	std::cout << "Twists: " << this->p_ntwist << std::endl;
+	std::cout << "NDeadEnds: " << this->p_ndeadend << std::endl;
 	for (uint i = 0; i < this->p_size;)
 	{
 		write(1, (void*)(this->p_maze + i), this->p_width);
@@ -38,13 +42,22 @@ char			BasicMaze::GetElement(uint x, uint y) const
 {
 	if (this->p_loaded == false)
 		return (0);
-	return (1);
+
+	if (x >= this->p_width || y >= this->p_height)
+		return (0);
+
+	return (this->p_maze[y * this->p_width + x]);
 }
 
 bool			BasicMaze::SetElement(uint x, uint y, char e)
 {
 	if (this->p_loaded == false)
 		return (false);
+
+	if (x >= this->p_width || y >= this->p_height)
+		return (false);
+
+	this->p_maze[y * this->p_width + x] = e;
 	return (true);
 }
 
@@ -78,7 +91,12 @@ bool			BasicMaze::Load(const char* f)
 
 bool			BasicMaze::Explore()
 {
-	return (false);
+	if (this->p_loaded == false)
+		return (false);
+
+	this->Track(0, 0);
+
+	return (true);
 }
 
 bool			BasicMaze::CheckFormat(std::ifstream& ifs)
@@ -132,4 +150,38 @@ bool			BasicMaze::CheckCharacter(std::ifstream& ifs)
 		}
 	}
 	return (true);
+}
+
+char			BasicMaze::Track(uint x, uint y)
+{
+	uint		dirT[4][2] = {
+			{x + 1, y},
+			{x - 1, y},
+			{x, y + 1},
+			{x, y - 1}
+	};
+	char		nex;
+	char		walls = 0;
+
+	if (this->GetElement(x, y) != SHEB_EMPTY)
+		return (this->GetElement(x, y));
+
+	this->SetElement(x, y, SHEB_EXPLORED);
+	++this->p_npath;
+
+	for (uint i = 0; i < 4; ++i)
+	{
+		nex = this->Track(dirT[i][0], dirT[i][1]);
+		if (nex == SHEB_WALL || nex == 0)
+			++walls;
+	}
+
+	if (walls == 3 || walls == 4)
+		++this->p_ndeadend;
+	else if (walls == 0 || walls == 1)
+	{
+		++this->p_ntwist;
+		std::cout << x << ' ' << y << std::endl;
+	}
+	return (this->GetElement(x, y));
 }
