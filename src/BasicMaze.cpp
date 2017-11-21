@@ -30,6 +30,7 @@ void			BasicMaze::PrintConsole() const
 	std::cout << "Path: " << this->p_npath << std::endl;
 	std::cout << "Twists: " << this->p_ntwist << std::endl;
 	std::cout << "NDeadEnds: " << this->p_ndeadend << std::endl;
+	std::cout << "Turns: " << this->p_nturn << std::endl;
 	for (uint i = 0; i < this->p_size;)
 	{
 		write(1, (void*)(this->p_maze + i), this->p_width);
@@ -162,6 +163,8 @@ char			BasicMaze::Track(uint x, uint y)
 	};
 	char		nex;
 	char		walls = 0;
+	char		vertical = 0;
+	char		horizontal = 0;
 
 	if (this->GetElement(x, y) != SHEB_EMPTY)
 		return (this->GetElement(x, y));
@@ -173,15 +176,21 @@ char			BasicMaze::Track(uint x, uint y)
 	{
 		nex = this->Track(dirT[i][0], dirT[i][1]);
 		if (nex == SHEB_WALL || nex == 0)
+		{
 			++walls;
+			if (i == 0 || i == 1)
+				++vertical;
+			else
+				++horizontal;
+		}
 	}
 
 	if (walls == 3 || walls == 4)
 		++this->p_ndeadend;
 	else if (walls == 0 || walls == 1)
-	{
 		++this->p_ntwist;
-		std::cout << x << ' ' << y << std::endl;
-	}
+	else if (walls == 2 && vertical == 1)
+		++this->p_nturn;
+
 	return (this->GetElement(x, y));
 }
