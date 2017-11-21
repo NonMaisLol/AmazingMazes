@@ -31,6 +31,10 @@ void			BasicMaze::PrintConsole() const
 	std::cout << "Twists: " << this->p_ntwist << std::endl;
 	std::cout << "NDeadEnds: " << this->p_ndeadend << std::endl;
 	std::cout << "Turns: " << this->p_nturn << std::endl;
+	if (this->p_type == AMaze::eType::e_imperfect)
+		std::cout << "Imperfect Maze" << std::endl;
+	else if (this->p_type == AMaze::eType::e_perfect)
+		std::cout << "Perfect Maze" << std::endl;
 	for (uint i = 0; i < this->p_size;)
 	{
 		write(1, (void*)(this->p_maze + i), this->p_width);
@@ -95,6 +99,7 @@ bool			BasicMaze::Explore()
 	if (this->p_loaded == false)
 		return (false);
 
+	this->p_type = AMaze::eType::e_perfect;
 	this->Track(0, 0);
 
 	return (true);
@@ -165,6 +170,7 @@ char			BasicMaze::Track(uint x, uint y)
 	char		walls = 0;
 	char		vertical = 0;
 	char		horizontal = 0;
+	char		explored = 0;
 
 	if (this->GetElement(x, y) != SHEB_EMPTY)
 		return (this->GetElement(x, y));
@@ -175,6 +181,8 @@ char			BasicMaze::Track(uint x, uint y)
 	for (uint i = 0; i < 4; ++i)
 	{
 		nex = this->Track(dirT[i][0], dirT[i][1]);
+		if (nex == SHEB_EXPLORED)
+			++explored;
 		if (nex == SHEB_WALL || nex == 0)
 		{
 			++walls;
@@ -192,5 +200,8 @@ char			BasicMaze::Track(uint x, uint y)
 	else if (walls == 2 && vertical == 1)
 		++this->p_nturn;
 
-	return (this->GetElement(x, y));
+	if (explored > 1)
+		this->p_type = AMaze::eType::e_imperfect;
+
+	return (SHEB_EMPTY);
 }
