@@ -2,5 +2,5 @@
 - Fichier de log d erreur (avec des numeros ?)
 - Faire qu on puisse choisir l entre et la sortie du lab.
 - Faire un truc de serialisation pour eviter de reparse chaque fois .. genre une option keepload.
-- Tester avec un 2 - 2
-- check le \n en fin de lab
+- check le \n en fin de lab- Size: (Check si le truc est bien rectangle, les lignes et colonnes corespodent)
+- Check comment on peut faire un output peda (avec des informations claires sur l erreur)

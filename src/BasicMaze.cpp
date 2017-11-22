@@ -35,6 +35,10 @@ void			BasicMaze::PrintConsole() const
 		std::cout << "Imperfect Maze" << std::endl;
 	else if (this->p_type == AMaze::eType::e_perfect)
 		std::cout << "Perfect Maze" << std::endl;
+	else if (this->p_type == AMaze::eType::e_rperfect)
+		std::cout << "R Perfect Maze" << std::endl;
+	else if (this->p_type == AMaze::eType::e_rrperfect)
+		std::cout << "R R Perfect Maze" << std::endl;
 	for (uint i = 0; i < this->p_size;)
 	{
 		write(1, (void*)(this->p_maze + i), this->p_width);
@@ -99,8 +103,10 @@ bool			BasicMaze::Explore()
 	if (this->p_loaded == false)
 		return (false);
 
-	this->p_type = AMaze::eType::e_perfect;
-	this->Track(0, 0);
+	if (this->Track(0, 0) != SHEB_EMPTY)
+		return (false);
+
+	this->CheckForPerfection();
 
 	return (true);
 }
@@ -169,7 +175,6 @@ char			BasicMaze::Track(uint x, uint y)
 	char		nex;
 	char		walls = 0;
 	char		vertical = 0;
-	char		horizontal = 0;
 	char		explored = 0;
 
 	if (this->GetElement(x, y) != SHEB_EMPTY)
@@ -188,8 +193,6 @@ char			BasicMaze::Track(uint x, uint y)
 			++walls;
 			if (i == 0 || i == 1)
 				++vertical;
-			else
-				++horizontal;
 		}
 	}
 
@@ -205,3 +208,49 @@ char			BasicMaze::Track(uint x, uint y)
 
 	return (SHEB_EMPTY);
 }
+
+void			BasicMaze::CheckForPerfection()
+{
+	int			dirT[4][2] = {
+			{1, 0}, {-1, 0},
+			{0, 1}, {0, -1}
+	};
+	uint		walls = 0;
+	char		val;
+
+	if (this->p_type == AMaze::eType::e_imperfect)
+		return ;
+
+	this->p_type = AMaze::eType::e_rrperfect;
+	for (uint y = 0; y < this->p_height; ++y)
+	{
+		for (uint x = 0; x < this->p_width; ++x)
+		{
+			walls = 0;
+			if (this->GetElement(x, y) == SHEB_WALL)
+			{
+				for (uint i = 0; i < 4; ++i)
+				{
+					val = GetElement(x + dirT[i][0], y + dirT[i][1]);
+					if (val == SHEB_EMPTY)
+					{
+						this->p_type = AMaze::eType::e_imperfect;
+						return ;
+					}
+					if (val == SHEB_WALL || val == 0)
+						++walls;
+				}
+			}
+			if (walls == 4)
+			{
+				this->p_type = AMaze::eType::e_perfect;
+				return ;
+			}
+			else if (walls == 3)
+			{
+				this->p_type = AMaze::eType::e_rperfect;
+			}
+		}
+	}
+}
+
