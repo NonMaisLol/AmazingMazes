@@ -23,17 +23,16 @@ public:
     e_rrperfect		// Really REALLY Perfect Maze
   };
 
-public:
-  AMaze();
-  virtual ~AMaze() { }
+  enum		eError
+  {
+	  e_unknown,
+	  e_bad_file,
+	  e_not_a_rect,
+	  e_alloc_failed,
+	  e_bad_char
+  };
 
 protected:
-  AMaze(const AMaze& m);
-  AMaze&	operator=(const AMaze& m);
-  
-protected:
-  bool		p_loaded;
-  bool		p_explored;
   uint		p_height;
   uint		p_width;
   uint		p_size;
@@ -43,9 +42,14 @@ protected:
   uint		p_nturn;
   eType		p_type;
 
+protected:
+  AMaze();
+  AMaze&	operator=(const AMaze& m);
+
+protected:
+  virtual ~AMaze() { }
+
 public:
-  bool		GetLoaded() const	{ return (this->p_loaded); }
-  bool		GetExplored() const	{ return (this->p_explored); }
   uint		GetHeight() const	{ return (this->p_height); }
   uint		GetWidth() const	{ return (this->p_width); }
   uint		GetSize() const		{ return (this->p_size); }
@@ -56,12 +60,11 @@ public:
   eType		GetType() const		{ return (this->p_type); }
 
 public:
-  virtual void	PrintConsole() const			= 0;
+  virtual void	PrintConsole() const				= 0;
   
 public:
   virtual char	GetElement(uint x, uint y) const	= 0;
   virtual bool	SetElement(uint x, uint y, char e)	= 0;
-  virtual bool	Load(const char* f)					= 0;
   virtual bool	Explore()							= 0;
 };
 

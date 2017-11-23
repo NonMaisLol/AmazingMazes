@@ -1,7 +1,9 @@
 #include	"BasicMaze.hpp"
 
-BasicMaze::BasicMaze()
+BasicMaze::BasicMaze(const char* filename) :
+	p_maze(nullptr)
 {
+	this->Load(filename);
 }
 
 BasicMaze::BasicMaze(const BasicMaze& m)
@@ -19,11 +21,6 @@ BasicMaze&		BasicMaze::operator=(const BasicMaze& m)
 
 void			BasicMaze::PrintConsole() const
 {
-	if (this->p_loaded == false)
-	{
-		std::cout << "Not loaded." << std::endl;
-		return ;
-	}
 	std::cout << "Width: " << this->p_width << std::endl;
 	std::cout << "Height: " << this->p_height << std::endl;
 	std::cout << "Size: " << this->p_size << std::endl;
@@ -41,7 +38,7 @@ void			BasicMaze::PrintConsole() const
 		std::cout << "R R Perfect Maze" << std::endl;
 	for (uint i = 0; i < this->p_size;)
 	{
-		write(1, (void*)(this->p_maze + i), this->p_width);
+		write(1, (void*)(this->p_maze.get() + i), this->p_width);
 		std::cout << std::endl;
 		i += this->GetWidth();
 	}
@@ -49,9 +46,6 @@ void			BasicMaze::PrintConsole() const
 
 char			BasicMaze::GetElement(uint x, uint y) const
 {
-	if (this->p_loaded == false)
-		return (0);
-
 	if (x >= this->p_width || y >= this->p_height)
 		return (0);
 
@@ -60,13 +54,20 @@ char			BasicMaze::GetElement(uint x, uint y) const
 
 bool			BasicMaze::SetElement(uint x, uint y, char e)
 {
-	if (this->p_loaded == false)
-		return (false);
-
 	if (x >= this->p_width || y >= this->p_height)
 		return (false);
 
 	this->p_maze[y * this->p_width + x] = e;
+	return (true);
+}
+
+bool			BasicMaze::Explore()
+{
+	if (this->Track(0, 0) != SHEB_EMPTY)
+		return (false);
+
+	this->CheckForPerfection();
+
 	return (true);
 }
 
@@ -75,38 +76,23 @@ bool			BasicMaze::Load(const char* f)
 	std::ifstream		ifs(f, std::ios::in);
 
 	if (!ifs)
-		return (false);
-	
-	this->p_loaded = false;
+		throw (AMaze::eError::e_bad_file);
+
 	if (this->CheckFormat(ifs) == false)
 	{
 		ifs.close();
-		return (false);
+		throw (AMaze::eError::e_not_a_rect);
 	}
 	if (this->RealLoading(ifs) == false)
 	{
 		ifs.close();
-		return (false);
+		throw (AMaze::eError::e_alloc_failed);
 	}
 	ifs.close();
 	if(this->CheckCharacter(ifs) == false)
 	{
-		return (false);
+		throw (AMaze::eError::e_bad_char);
 	}
-	this->p_loaded = true;
-
-	return (true);
-}
-
-bool			BasicMaze::Explore()
-{
-	if (this->p_loaded == false)
-		return (false);
-
-	if (this->Track(0, 0) != SHEB_EMPTY)
-		return (false);
-
-	this->CheckForPerfection();
 
 	return (true);
 }
@@ -143,10 +129,17 @@ bool			BasicMaze::RealLoading(std::ifstream& ifs)
 
 	ifs.clear();
 	ifs.seekg(0, std::ios::beg);
-	this->p_maze = new char[this->p_size]();
+	try
+	{
+		this->p_maze = std::make_unique<char[]>(this->p_size);
+	}
+	catch (const std::exception& e)
+	{
+		return (false);
+	}
 	while (std::getline(ifs, line))
 	{
-		memcpy(this->p_maze + idx, line.c_str(), line.length());
+		memcpy(this->p_maze.get() + idx, line.c_str(), line.length());
 		idx += line.length();
 	}
 	return (true);

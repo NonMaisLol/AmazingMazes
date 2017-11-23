@@ -7,6 +7,7 @@
 #include	<string.h>
 #include	<vector>
 #include	<unistd.h>
+#include	<memory>
 
 #include	"AMaze.hpp"
 
@@ -14,12 +15,15 @@ class		BasicMaze :
 public AMaze
 {
 private:
-  char* p_maze;
+	std::unique_ptr<char[]>	p_maze;
   
 public:
-  BasicMaze();
-  BasicMaze(const BasicMaze& m);
-  ~BasicMaze();
+	BasicMaze(const char* fname);
+	BasicMaze(const BasicMaze& m);
+	~BasicMaze();
+
+private:
+	BasicMaze() { }
 
 public:
   BasicMaze&	operator=(const BasicMaze& m);
@@ -30,10 +34,10 @@ public:
 public:
   char		GetElement(uint x, uint y) const;
   bool		SetElement(uint x, uint y, char e);
-  bool		Load(const char* f);
   bool		Explore();
 
-private:
+protected:
+  bool		Load(const char* f);
   bool		CheckFormat(std::ifstream& ifs);
   bool		RealLoading(std::ifstream& ifs);
   bool		CheckCharacter(std::ifstream& ifs);
