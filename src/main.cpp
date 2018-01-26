@@ -174,7 +174,7 @@ int		main(int ac, char** av)
 
 	try
 	{
-		std::cout << std::boolalpha << tests[av[1]]() << std::endl;
+		std::cout << (tests[av[1]]() == true ? "OK" : "KO") << std::endl;
 		std::cout << error_msg << std::endl;
 	}
 	catch (const std::exception& e)
