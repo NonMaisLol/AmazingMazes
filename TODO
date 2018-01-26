@@ -1,9 +1,14 @@
 
-- Fichier de log d erreur (avec des numeros ?)
 - Faire qu on puisse choisir l entre et la sortie du lab.
-- Faire un truc de serialisation pour eviter de reparse chaque fois .. genre une option keepload.
 - check le \n en fin de lab- Size: (Check si le truc est bien rectangle, les lignes et colonnes corespodent)
 - Check comment on peut faire un output peda (avec des informations claires sur l erreur)
-- Mettre le load dans le ctor. L objet n a pas a existe si le load a fail
-- Faire une classe TestMaze qui effectue tous les test et retient les resultats .. ou on fait un seriealize quand meme !
-- Faire un truc qui serialize et deserialize (deserialize en static ?)
+- Definir exactement les tests a faire
+
+- Les operateurs =
+- ctor copie dans amaze.hpp
+X check si y a une entree
+X check si solvable
+X meilleur nom a AMaze ... genre MazeAnalyst
+X passer les header en .HPP
+- % de twists etc etc ..
+- Calculateur de complexite

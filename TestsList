@@ -1,0 +1,16 @@
+
+FORMAT:
+X Size: (Check si le truc est bien rectangle, les lignes et colonnes corespodent)
+X Pas de mauvais caracteres.
+- Trailing line (Pas de \n a la fin).
+
+BASICS:
+X On peut rejoindre la sortie
+- Les labyrinthes imparfaits sont imparfaits.
+X Les labyrinthes parfaits sont parfaits.
+- Il y a suffisament de path
+- Il y a suffisament de turns ou twists
+
+ADVANCED:
+X Les labyrinthes parfaits sont vraiment parfaits.
+X Les labyrinthes parfaits sont VRAIMENT parfaits.

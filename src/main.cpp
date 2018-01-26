@@ -1,71 +1,187 @@
+/*
+ * main.cpp
+ *
+ *  Created on: Jan 3, 2018
+ *      Author: Pascal Assens
+ */
+
 #include	<iostream>
 #include	<memory>
+#include	<unordered_map>
 
-#include	"BasicMaze.hpp"
+#include 	"MazeAnalyst.hpp"
 
-enum	eTest
+std::string		error_msg = "";
+
+bool	RunTest_FORMAT(const char* fname, uint w, uint h)
 {
-	e_size,
-	e_char,
-	e_trailing
-};
+	std::unique_ptr<AMazeAnalyst>		m;
 
-bool	Test(eTest test, const char* fname, uint w, uint h)
-{
 	try
 	{
-		auto m = std::make_unique<BasicMaze>(fname);
-
-		m->Explore();
-		m->PrintConsole();
+		m = std::make_unique<MazeAnalyst>(fname);
 	}
-	catch (const AMaze::eError& e)
+	catch (const MazeError& e)
 	{
-		if (e == AMaze::eError::e_bad_file)
-		{
-			std::cout << "Bad  File" << std::endl;
-		}
-		else if (e == AMaze::eError::e_bad_file)
-		{
-			std::cout << "Not a Rectangle" << std::endl;
-		}
-		else if (e == AMaze::eError::e_alloc_failed)
-		{
-			std::cout << "Maze allocation failed" << std::endl;
-		}
-		else if (e == AMaze::eError::e_bad_char)
-		{
-			std::cout << "Bad Char" << std::endl;
-		}
-		else
-		{
-			std::cout << "Another error occurred !" << std::endl;
-			return (false);
-		}
+		error_msg = e.what();
+		return (false);
+	}
+
+	if (m->GetWidth() != w || m->GetHeight() != h)
+	{
+		error_msg = "Size is such wrong !";
+		return (false);
 	}
 	return (true);
 }
 
+bool	RunTest_WAYOUT(const char* fname)
+{
+	std::unique_ptr<AMazeAnalyst>		m;
+
+	try
+	{
+		m = std::make_unique<MazeAnalyst>(fname);
+	}
+	catch (const MazeError& e)
+	{
+		error_msg = e.what();
+		return (false);
+	}
+
+	m->Explore();
+	if (m->GetWayOut() == true)
+	{
+		return (true);
+	}
+
+	return (false);
+}
+
+bool	RunTest_ISPERFECT(const char* fname)
+{
+	std::unique_ptr<AMazeAnalyst>		m;
+
+	try
+	{
+		m = std::make_unique<MazeAnalyst>(fname);
+	}
+	catch (const MazeError& e)
+	{
+		error_msg = e.what();
+		return (false);
+	}
+
+	m->Explore();
+	if (m->GetType() == AMazeAnalyst::e_perfect ||
+		m->GetType() == AMazeAnalyst::e_rperfect ||
+		m->GetType() == AMazeAnalyst::e_rrperfect)
+	{
+		return (true);
+	}
+
+	return (false);
+}
+
+bool	RunTest_ISRPERFECT(const char* fname)
+{
+	std::unique_ptr<AMazeAnalyst>		m;
+
+	try
+	{
+		m = std::make_unique<MazeAnalyst>(fname);
+	}
+	catch (const MazeError& e)
+	{
+		error_msg = e.what();
+		return (false);
+	}
+
+	m->Explore();
+	if (m->GetType() == AMazeAnalyst::e_rperfect ||
+		m->GetType() == AMazeAnalyst::e_rrperfect)
+	{
+		return (true);
+	}
+
+	return (false);
+}
+
+bool	RunTest_ISRRPERFECT(const char* fname)
+{
+	std::unique_ptr<AMazeAnalyst>		m;
+
+	try
+	{
+		m = std::make_unique<MazeAnalyst>(fname);
+	}
+	catch (const MazeError& e)
+	{
+		error_msg = e.what();
+		return (false);
+	}
+
+	m->Explore();
+	if (m->GetType() == AMazeAnalyst::e_rrperfect)
+	{
+		return (true);
+	}
+
+	return (false);
+}
+
+bool	RunTest_ISIMPERFECT(const char* fname)
+{
+	std::unique_ptr<AMazeAnalyst>		m;
+
+	try
+	{
+		m = std::make_unique<MazeAnalyst>(fname);
+	}
+	catch (const MazeError& e)
+	{
+		error_msg = e.what();
+		return (false);
+	}
+
+	m->Explore();
+	if (m->GetType() == AMazeAnalyst::e_imperfect)
+	{
+		return (true);
+	}
+
+	return (false);
+}
+
+typedef std::function<bool ()> Test;
+
 int		main(int ac, char** av)
 {
-  if (ac != 2)
-  {
-      std::cout << "Missing Parameters." << std::endl;
-      return (1);
-  }
+	if (ac != 3)
+	{
+		std::cout << "Missing Parameters." << std::endl;
+		return (1);
+	}
 
-  try
-  {
-	  if (Test(eTest::e_size, av[1], 10, 5) == false)
-	  {
-		  return (1);
-	  }
-  }
-  catch (const std::exception& e)
-  {
-  	std::cout << "FATAL ERROR: " << e.what() << std::endl;
-  	return (1);
-  }
+	std::unordered_map<std::string, Test>	tests = {
+		{ "Format", [&av](){ return (RunTest_FORMAT(av[2], 10, 5)); } },
+		{ "Wayout", [&av](){ return (RunTest_WAYOUT(av[2])); } },
+		{ "Perfect", [&av](){ return (RunTest_ISPERFECT(av[2])); } },
+		{ "RPerfect", [&av](){ return (RunTest_ISRPERFECT(av[2])); } },
+		{ "RRPerfect", [&av](){ return (RunTest_ISRRPERFECT(av[2])); } },
+		{ "Imperfect", [&av](){ return (RunTest_ISIMPERFECT(av[2])); } }
+	};
 
-  return (0);
+	try
+	{
+		std::cout << std::boolalpha << tests[av[1]]() << std::endl;
+		std::cout << error_msg << std::endl;
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << "FATAL ERROR !: " << e.what() << std::endl;
+		return (1);
+	}
+
+	return (0);
 }

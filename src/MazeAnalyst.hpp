@@ -1,5 +1,12 @@
-#ifndef		__BASICMAZE_HH__
-#define		__BASICMAZE_HH__
+/*
+ * MazeAnalyst.hpp
+ *
+ *  Created on: Jan 3, 2018
+ *      Author: Pascal Assens
+ */
+
+#ifndef		__MAZEANALYST_HPP__
+#define		__MAZEANALYST_HPP__
 
 #include	<iostream>
 #include	<fstream>
@@ -8,28 +15,30 @@
 #include	<vector>
 #include	<unistd.h>
 #include	<memory>
+#include	<sstream>
 
-#include	"AMaze.hpp"
+#include 	"AMazeAnalyst.hpp"
 
-class		BasicMaze :
-public AMaze
+class		MazeAnalyst :
+public AMazeAnalyst
 {
 private:
 	std::unique_ptr<char[]>	p_maze;
   
 public:
-	BasicMaze(const char* fname);
-	BasicMaze(const BasicMaze& m);
-	~BasicMaze();
+	MazeAnalyst(const char* fname);
+	MazeAnalyst(const MazeAnalyst& m);
+	~MazeAnalyst();
 
 private:
-	BasicMaze() { }
+	MazeAnalyst() { }
 
 public:
-  BasicMaze&	operator=(const BasicMaze& m);
+	MazeAnalyst&	operator=(const MazeAnalyst& m);
 
 public:
-  void		PrintConsole() const;
+  std::string		ToString() const;
+  std::string		ToJson() const;
   
 public:
   char		GetElement(uint x, uint y) const;
@@ -45,4 +54,4 @@ protected:
   void		CheckForPerfection();
 };
 
-#endif		// __BASICMAZE_HH__
+#endif		// __MAZEANALYST_HPP__

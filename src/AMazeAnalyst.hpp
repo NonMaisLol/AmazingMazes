@@ -1,9 +1,18 @@
-#ifndef		__AMAZE_HH__
-#define		__AMAZE_HH__
-
 /*
-  Ctor par copie dans la fille a mettre aussi ici.
+ * AMazeAnalyst.hpp
+ *
+ *  Created on: Jan 3, 2018
+ *      Author: Pascal Assens
  */
+
+#ifndef		__AMAZEANALYST_HPP__
+#define		__AMAZEANALYST_HPP__
+
+#include	<memory>
+#include	<string>
+#include	<unistd.h>
+
+#include	"MazeError.hpp"
 
 #define		SHEB_EMPTY		'*'
 #define		SHEB_WALL		'X'
@@ -11,7 +20,7 @@
 
 typedef		unsigned int	uint;
 
-class		AMaze
+class		AMazeAnalyst
 {
 public:
   enum		eType
@@ -23,15 +32,6 @@ public:
     e_rrperfect		// Really REALLY Perfect Maze
   };
 
-  enum		eError
-  {
-	  e_unknown,
-	  e_bad_file,
-	  e_not_a_rect,
-	  e_alloc_failed,
-	  e_bad_char
-  };
-
 protected:
   uint		p_height;
   uint		p_width;
@@ -40,14 +40,15 @@ protected:
   uint		p_ntwist;
   uint		p_ndeadend;
   uint		p_nturn;
+  bool		p_wayout;
   eType		p_type;
 
 protected:
-  AMaze();
-  AMaze&	operator=(const AMaze& m);
+  AMazeAnalyst();
+  AMazeAnalyst&	operator=(const AMazeAnalyst& m);
 
-protected:
-  virtual ~AMaze() { }
+public:
+  virtual ~AMazeAnalyst() { }
 
 public:
   uint		GetHeight() const	{ return (this->p_height); }
@@ -57,15 +58,17 @@ public:
   uint		GetNTwist() const	{ return (this->p_ntwist); }
   uint		GetNDeadEnd() const	{ return (this->p_ndeadend); }
   uint		GetNTurn() const	{ return (this->p_nturn); }
+  bool		GetWayOut() const	{ return (this->p_wayout); }
   eType		GetType() const		{ return (this->p_type); }
 
 public:
-  virtual void	PrintConsole() const				= 0;
+  virtual std::string	ToString() const				= 0;
+  virtual std::string	ToJson() const					= 0;
   
 public:
-  virtual char	GetElement(uint x, uint y) const	= 0;
-  virtual bool	SetElement(uint x, uint y, char e)	= 0;
-  virtual bool	Explore()							= 0;
+  virtual char	GetElement(uint x, uint y) const		= 0;
+  virtual bool	SetElement(uint x, uint y, char e)		= 0;
+  virtual bool	Explore()								= 0;
 };
 
-#endif		// __AMAZE_HH__
+#endif		// __AMAZEANALYST_HH__
