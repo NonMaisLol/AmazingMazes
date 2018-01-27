@@ -71,4 +71,4 @@ public:
   virtual bool	Explore()								= 0;
 };
 
-#endif		// __AMAZEANALYST_HH__
+#endif		// __AMAZEANALYST_HPP__

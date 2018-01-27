@@ -23,7 +23,8 @@ public:
 	  e_bad_file,
 	  e_not_a_rect,
 	  e_alloc_failed,
-	  e_bad_char
+	  e_bad_char,
+	  e_trailing_error
 	};
 
 private:
@@ -34,7 +35,7 @@ public:
 	virtual ~MazeError() throw();
 
 private:
-	MazeError() { }
+	MazeError() : p_type(eError::e_unknown) { }
 
 public:
 	const eError	GetType() const throw() { return (this->p_type); }

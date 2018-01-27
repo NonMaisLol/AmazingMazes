@@ -48,6 +48,8 @@ std::string		MazeAnalyst::ToString() const
 		out << "R Perfect Maze" << std::endl;
 	else if (this->p_type == AMazeAnalyst::e_rrperfect)
 		out << "R R Perfect Maze" << std::endl;
+	else
+		out << "NONE" << std::endl;
 
 	for (uint i = 0; i < this->p_size;)
 	{
@@ -73,13 +75,15 @@ std::string		MazeAnalyst::ToJson() const
 	out << '\t' << "\"Turns\": " << this->p_nturn << "," << std::endl;
 	out << '\t' << "\"WayOut\": " << this->p_wayout << "," << std::endl;
 	if (this->p_type == AMazeAnalyst::e_imperfect)
-		out << "\t"<< "\"Type\": IMPERFECT," << std::endl;
+		out << "\t"<< "\"Type\": IMPERFECT" << std::endl;
 	else if (this->p_type == AMazeAnalyst::e_perfect)
-		out << "\t"<< "\"Type\": PERFECT," << std::endl;
+		out << "\t"<< "\"Type\": PERFECT" << std::endl;
 	else if (this->p_type == AMazeAnalyst::e_rperfect)
-		out << "\t"<< "\"Type\": RPERFECT," << std::endl;
+		out << "\t"<< "\"Type\": RPERFECT" << std::endl;
 	else if (this->p_type == AMazeAnalyst::e_rrperfect)
-		out << "\t"<< "\"Type\": RRPERFECT," << std::endl;
+		out << "\t"<< "\"Type\": RRPERFECT" << std::endl;
+	else
+		out << "\t"<< "\"Type\": NONE" << std::endl;
 	out << "}";
 
 	return (out.str().c_str());
@@ -120,7 +124,7 @@ bool			MazeAnalyst::Explore()
 
 bool			MazeAnalyst::Load(const char* f)
 {
-	std::ifstream		ifs(f, std::ios::in);
+	std::ifstream		ifs(f, std::ios::in | std::ios::binary);
 
 	if (!ifs)
 		throw (MazeError(MazeError::e_bad_file));
@@ -130,17 +134,22 @@ bool			MazeAnalyst::Load(const char* f)
 		ifs.close();
 		throw (MazeError(MazeError::e_not_a_rect));
 	}
-	if (this->RealLoading(ifs) == false)
+	else if (this->RealLoading(ifs) == false)
 	{
 		ifs.close();
 		throw (MazeError(MazeError::e_alloc_failed));
 	}
-	ifs.close();
-	if(this->CheckCharacter(ifs) == false)
+	else if (this->CheckCharacter(ifs) == false)
 	{
+		ifs.close();
 		throw (MazeError(MazeError::e_bad_char));
 	}
-
+	else if (this->CheckTrailing(ifs) == false)
+	{
+		ifs.close();
+		throw (MazeError(MazeError::e_trailing_error));
+	}
+	ifs.close();
 	return (true);
 }
 
@@ -200,6 +209,22 @@ bool			MazeAnalyst::CheckCharacter(std::ifstream& ifs)
 		{
 			return (false);
 		}
+	}
+	return (true);
+}
+
+bool			MazeAnalyst::CheckTrailing(std::ifstream& ifs)
+{
+	std::streampos fsize = 0;
+
+	ifs.clear();
+	ifs.seekg(0, std::ios::beg);
+	fsize = ifs.tellg();
+	ifs.seekg(0, std::ios::end);
+	fsize = ifs.tellg() - fsize;
+	if (fsize != (((this->p_width + 1) * this->p_height) - 1))
+	{
+		return (false);
 	}
 	return (true);
 }

@@ -50,6 +50,7 @@ protected:
   bool		CheckFormat(std::ifstream& ifs);
   bool		RealLoading(std::ifstream& ifs);
   bool		CheckCharacter(std::ifstream& ifs);
+  bool		CheckTrailing(std::ifstream& ifs);
   char		Track(uint x, uint y);
   void		CheckForPerfection();
 };

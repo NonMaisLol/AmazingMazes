@@ -8,12 +8,13 @@
 #include	<iostream>
 #include	<memory>
 #include	<unordered_map>
+#include	<stdlib.h>
 
-#include 	"MazeAnalyst.hpp"
+#include 	"MazeTester.hpp"
 
 std::string		error_msg = "";
 
-bool	RunTest_FORMAT(const char* fname, uint w, uint h)
+bool	PrintString(const char* fname)
 {
 	std::unique_ptr<AMazeAnalyst>		m;
 
@@ -21,163 +22,46 @@ bool	RunTest_FORMAT(const char* fname, uint w, uint h)
 	{
 		m = std::make_unique<MazeAnalyst>(fname);
 	}
-	catch (const MazeError& e)
+	catch (const std::exception& e)
 	{
 		error_msg = e.what();
 		return (false);
 	}
 
-	if (m->GetWidth() != w || m->GetHeight() != h)
-	{
-		error_msg = "Size is such wrong !";
-		return (false);
-	}
+	m->Explore();
+	std::cout << m->ToString() << std::endl;
 	return (true);
 }
 
-bool	RunTest_WAYOUT(const char* fname)
-{
-	std::unique_ptr<AMazeAnalyst>		m;
-
-	try
-	{
-		m = std::make_unique<MazeAnalyst>(fname);
-	}
-	catch (const MazeError& e)
-	{
-		error_msg = e.what();
-		return (false);
-	}
-
-	m->Explore();
-	if (m->GetWayOut() == true)
-	{
-		return (true);
-	}
-
-	return (false);
-}
-
-bool	RunTest_ISPERFECT(const char* fname)
-{
-	std::unique_ptr<AMazeAnalyst>		m;
-
-	try
-	{
-		m = std::make_unique<MazeAnalyst>(fname);
-	}
-	catch (const MazeError& e)
-	{
-		error_msg = e.what();
-		return (false);
-	}
-
-	m->Explore();
-	if (m->GetType() == AMazeAnalyst::e_perfect ||
-		m->GetType() == AMazeAnalyst::e_rperfect ||
-		m->GetType() == AMazeAnalyst::e_rrperfect)
-	{
-		return (true);
-	}
-
-	return (false);
-}
-
-bool	RunTest_ISRPERFECT(const char* fname)
-{
-	std::unique_ptr<AMazeAnalyst>		m;
-
-	try
-	{
-		m = std::make_unique<MazeAnalyst>(fname);
-	}
-	catch (const MazeError& e)
-	{
-		error_msg = e.what();
-		return (false);
-	}
-
-	m->Explore();
-	if (m->GetType() == AMazeAnalyst::e_rperfect ||
-		m->GetType() == AMazeAnalyst::e_rrperfect)
-	{
-		return (true);
-	}
-
-	return (false);
-}
-
-bool	RunTest_ISRRPERFECT(const char* fname)
-{
-	std::unique_ptr<AMazeAnalyst>		m;
-
-	try
-	{
-		m = std::make_unique<MazeAnalyst>(fname);
-	}
-	catch (const MazeError& e)
-	{
-		error_msg = e.what();
-		return (false);
-	}
-
-	m->Explore();
-	if (m->GetType() == AMazeAnalyst::e_rrperfect)
-	{
-		return (true);
-	}
-
-	return (false);
-}
-
-bool	RunTest_ISIMPERFECT(const char* fname)
-{
-	std::unique_ptr<AMazeAnalyst>		m;
-
-	try
-	{
-		m = std::make_unique<MazeAnalyst>(fname);
-	}
-	catch (const MazeError& e)
-	{
-		error_msg = e.what();
-		return (false);
-	}
-
-	m->Explore();
-	if (m->GetType() == AMazeAnalyst::e_imperfect)
-	{
-		return (true);
-	}
-
-	return (false);
-}
-
-typedef std::function<bool ()> Test;
-
 int		main(int ac, char** av)
 {
-	if (ac != 3)
+	if (ac != 5)
 	{
-		std::cout << "Missing Parameters." << std::endl;
+		std::cout << "Bad Parameters." << std::endl;
 		return (1);
 	}
 
-	std::unordered_map<std::string, Test>	tests = {
-		{ "Format", [&av](){ return (RunTest_FORMAT(av[2], 10, 5)); } },
-		{ "Wayout", [&av](){ return (RunTest_WAYOUT(av[2])); } },
-		{ "Perfect", [&av](){ return (RunTest_ISPERFECT(av[2])); } },
-		{ "RPerfect", [&av](){ return (RunTest_ISRPERFECT(av[2])); } },
-		{ "RRPerfect", [&av](){ return (RunTest_ISRRPERFECT(av[2])); } },
-		{ "Imperfect", [&av](){ return (RunTest_ISIMPERFECT(av[2])); } }
+	std::unordered_map<std::string, MazeTester::eTest> tests = {
+		{ "Format", MazeTester::e_format },
+		{ "Wayout", MazeTester::e_wayout },
+		{ "Perfect", MazeTester::e_perfect },
+		{ "RPerfect", MazeTester::e_rperfect },
+		{ "RRPerfect", MazeTester::e_rrperfect },
+		{ "Imperfect", MazeTester::e_imperfect }
 	};
+	MazeTester	mt;
+	uint		w = 0;
+	uint		h = 0;
+
+	PrintString(av[1]);
 
 	try
 	{
-		std::cout << (tests[av[1]]() == true ? "OK" : "KO") << std::endl;
-		std::cout << error_msg << std::endl;
-	}
-	catch (const std::exception& e)
+		w = atoi(av[2]);
+		h = atoi(av[3]);
+		std::cout << (mt.RunTest(av[1], w, h, tests[av[4]]) == true ? "OK" : "KO") << std::endl;
+		std::cout << mt.GetMessage() << std::endl;
+	} catch (const std::exception& e)
 	{
 		std::cout << "FATAL ERROR !: " << e.what() << std::endl;
 		return (1);

@@ -34,6 +34,9 @@ const char*			MazeError::what() const throw()
 	case (eError::e_bad_char) :
 		return ("Bad Char.");
 		break;
+	case (eError::e_trailing_error) :
+		return ("Trailing Error");
+		break ;
 	default:
 		return ("Another error occurred !");
 		break ;
